@@ -1,43 +1,90 @@
+import sys, random
 
-def main():
-    from google import genai
-    from dotenv import load_dotenv
-    import os
-    from PIL import Image
-    from pdf2image import convert_from_path, convert_from_bytes
-    from pdf2image.exceptions import (
-        PDFInfoNotInstalledError,
-        PDFPageCountError,
-        PDFSyntaxError
-    )
-    import pytesseract
-    from datetime import datetime
+from PySide6.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QMainWindow,
+    QLabel,
+    QPushButton,
+    QWidget,
+    QVBoxLayout
+)
+from PySide6.QtGui import QIcon
+from PySide6 import QtCore
 
-    load_dotenv()
-    # The client gets the API key from the environment variable `GEMINI_API_KEY`.
-    client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-
-    images = convert_from_path('assets/Atmosphere_Weather_and_Climate_----_(6_Atmospheric_motion_principles).pdf')
-
-    page_out_list = []
+def txt_file_to_list(filepath: str) -> list[str]:
     
-    for image in images:
-        page_out_list.append(pytesseract.image_to_string(image))
+    with open(filepath) as file:
+        f_str = file.read()
+        token_list = f_str.split()
 
-    tess_res = " ".join(page_out_list)
-
-    
-    
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview",
-        contents=f"Filter out any nonsensical artifacts. Remove figure descriptions in the output. Remove Bibliographies and attributions. Try to improve structure and flow. Do not summarize, want a one-to-one transcription. No bullet points or emojis or indentation. Raw Text as output only.\n{tess_res}"
-    )
+    return token_list
 
 
+class MyWidget(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Speed Reader")
+        self.setWindowIcon(QIcon('./assets/lightning.png'))
+        self.resize(800, 600)
 
-    with open(f"output_{datetime.now().isoformat()[:10]}.txt", 'x', encoding='utf-8') as file:
-        assert response.text is not None
-        file.write(response.text)
-    
+        central = QWidget(self)
+        self.setCentralWidget(central)
+
+        self.text = QLabel(
+            "No File Loaded. Press \'Upload Text\'",
+            alignment=QtCore.Qt.AlignmentFlag.AlignCenter
+        )
+
+        self.play_button = QPushButton("Play")
+        self.pause_button = QPushButton("Pause")
+        self.upload_file_button = QPushButton("Upload Text")
+
+        self.main_layout = QVBoxLayout(central)
+        self.main_layout.addWidget(self.text)
+        self.main_layout.addWidget(self.play_button)
+        self.main_layout.addWidget(self.pause_button)
+        self.main_layout.addWidget(self.upload_file_button)
+
+        self.play_button.clicked.connect(self.play)
+        self.pause_button.clicked.connect(self.pause)
+        self.upload_file_button.clicked.connect(self.uploadFile)
+
+        # disable controls without file upload
+        self.play_button.setEnabled(False)
+        self.pause_button.setEnabled(False)
+
+    @QtCore.Slot()
+    def play(self):
+        print("I should play now")
+
+    @QtCore.Slot()
+    def pause(self):
+        print("I should pause now")
+
+    @QtCore.Slot()
+    def uploadFile(self):
+        f_name, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Text File",
+            ".",
+            "(*.txt)"
+        )
+
+        if f_name:
+            self.text.setText(f"Selected file: {f_name}.")
+            t_list = txt_file_to_list(f_name)
+            print(t_list)
+            self.play_button.setEnabled(True)
+            self.pause_button.setEnabled(True)
+        
+
+
 if __name__ == "__main__":
-    main()
+    app = QApplication([])
+
+    widget = MyWidget()
+    #widget.resize(800, 600)
+    widget.show()
+
+    sys.exit(app.exec())
