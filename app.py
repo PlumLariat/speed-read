@@ -7,10 +7,12 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QWidget,
-    QVBoxLayout
+    QGridLayout
 )
 from PySide6.QtGui import QIcon
 from PySide6 import QtCore
+
+from layout_colorwidget import Color
 
 def txt_file_to_list(filepath: str) -> list[str]:
     
@@ -28,9 +30,25 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon('./assets/lightning.png'))
         self.resize(800, 600)
 
+        # define all necessary components
+
+
+        layout = QGridLayout()
+        layout.addWidget(Color('yellow'), 0, 0, 4, 7)
+        layout.addWidget(Color('green'), 4, 0)
+        layout.addWidget(Color('blue'), 4, 1)
+        layout.addWidget(Color('red'), 4, 2, 1, 3)
+        layout.addWidget(Color('purple'), 4, 5, 1, 2)
+
+        widget = QWidget()
+        widget.setLayout(layout)
+        self.setCentralWidget(widget)
+
+        """
         central = QWidget(self)
         self.setCentralWidget(central)
 
+        
         self.text = QLabel(
             "No File Loaded. Press \'Upload Text\'",
             alignment=QtCore.Qt.AlignmentFlag.AlignCenter
@@ -53,6 +71,8 @@ class MainWindow(QMainWindow):
         # disable controls without file upload
         self.play_button.setEnabled(False)
         self.pause_button.setEnabled(False)
+
+        """
 
     @QtCore.Slot()
     def play(self):
