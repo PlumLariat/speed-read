@@ -21,7 +21,7 @@ def txt_file_to_list(filepath: str) -> list[str]:
     return token_list
 
 
-class MyWidget(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Speed Reader")
@@ -83,8 +83,7 @@ class MyWidget(QMainWindow):
 if __name__ == "__main__":
     app = QApplication([])
 
-    widget = MyWidget()
-    #widget.resize(800, 600)
-    widget.show()
+    window = MainWindow()
+    window.show()
 
     sys.exit(app.exec())
