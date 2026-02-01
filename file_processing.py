@@ -13,12 +13,17 @@ from datetime import datetime
 
 # Use tesseract to grab as much text data as possible from pdf
 def extract(pdf_filepath: str) -> str:
+    print("Starting extraction")
     images = convert_from_path(pdf_filepath)
-
+    print("finished...")
+    counter = 0
     page_out_list = []
 
     for image in images:
+        counter += 1
+        print(str(counter) + "/" + str(len(images)) + " images processed")
         page_out_list.append(pytesseract.image_to_string(image))
+
 
     return " ".join(page_out_list)
 
