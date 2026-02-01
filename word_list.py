@@ -38,7 +38,7 @@ class WordList:
 
     def __txt_file_to_list(self, filepath: str) -> list[str]:
         
-        with open(filepath) as file:
+        with open(filepath, encoding="utf-8") as file:
             f_str = file.read()
             token_list = f_str.split()
 

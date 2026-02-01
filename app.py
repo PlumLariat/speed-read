@@ -1,7 +1,9 @@
 import sys
+import magic
 
 from PySide6.QtWidgets import (
     QApplication,
+    QErrorMessage,
     QFileDialog,
     QMainWindow,
     QMenu,
@@ -16,6 +18,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtCore import QTimer, Slot, Qt
 from word_list import WordList
+from import_dialog import ImportDialog
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -42,7 +45,12 @@ class MainWindow(QMainWindow):
         self.prog_bar.setTextVisible(False)
 
         self.wpm_control = QSpinBox()
-        self.wpm_control.setRange(1,500)
+        wpm_label = QLabel("Words/Minute")
+        wpm_label_font = wpm_label.font()
+        wpm_label_font.setPointSize(7)
+        wpm_label.setFont(wpm_label_font)
+        self.wpm_control.setRange(1, 500)
+        self.wpm_control.lineEdit().setReadOnly(True)
         self.wpm_control.setValue(self.timer_interval)
         self.wpm_control.setSingleStep(10)
         self.wpm_control.valueChanged.connect(self.wpm_changed)
@@ -62,10 +70,11 @@ class MainWindow(QMainWindow):
         # Define the layout, place components
         layout = QGridLayout()
         layout.addWidget(self.word_display, 0, 0, 4, 7, alignment=Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.play_button, 4, 0)
-        layout.addWidget(self.pause_button, 4, 1)
-        layout.addWidget(self.prog_bar, 4, 2, 1, 3)
-        layout.addWidget(self.wpm_control, 4, 5, 1, 2)
+        layout.addWidget(wpm_label, 4, 5, 1, 2, alignment=Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(self.play_button, 5, 0)
+        layout.addWidget(self.pause_button, 5, 1)
+        layout.addWidget(self.prog_bar, 5, 2, 1, 3)
+        layout.addWidget(self.wpm_control, 5, 5, 1, 2)
 
         widget = QWidget()
         widget.setLayout(layout)
@@ -80,7 +89,7 @@ class MainWindow(QMainWindow):
             self.word_display.setText(self.word_list.get_current_word())
 
         self.play_button.setEnabled(False)
-        self.timer.setInterval(self.timer_interval) # 1 second intervals
+        self.timer.setInterval(self.timer_interval)
         self.timer.start()
 
     @Slot()
@@ -101,23 +110,50 @@ class MainWindow(QMainWindow):
     @Slot(int)
     def wpm_changed(self, value: int) -> int:
         # go from wpm to milisecond
-        self.timer_interval
+        new_interval = wpm_to_ms(value)
+        print(new_interval)
+        self.timer_interval = new_interval
+        self.timer.setInterval(self.timer_interval)
 
     def upload_file_action(self):
         f_name, _ = QFileDialog.getOpenFileName(
             self,
-            "Open Text File",
+            "Open PDF or Text File",
             ".",
-            "(*.txt)"
+            "PDF & Text files (*.pdf *.txt)"
         )
 
         if f_name:
+            # determine the type of the file to determine additional processing
+            file_type = magic.from_file(f_name, mime=True)
+
+            # case .txt
+            if "text/plain" in file_type:
+                self.word_list = WordList()
+                self.word_list.init_from_txt_file(f_name)
+                self.word_display.setText(self.word_list.get_current_word())
+                self.play_button.setEnabled(True)
+                self.pause_button.setEnabled(True)
+                self.prog_bar.setMaximum(self.word_list.remaining)
+                return
+            
+            # case .pdf
+            elif "application/pdf" in file_type:
+                import_d = ImportDialog()
+                import_d.exec()
+
+
+            # after a text version has been obtained, proceed as usual
+            """
             self.word_list = WordList()
             self.word_list.init_from_txt_file(f_name)
             self.word_display.setText(self.word_list.get_current_word())
             self.play_button.setEnabled(True)
             self.pause_button.setEnabled(True)
             self.prog_bar.setMaximum(self.word_list.remaining)
+            """
+
+
     
     def __init_menu_bar(self) -> QMenuBar:
         mb = QMenuBar()
