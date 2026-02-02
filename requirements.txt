@@ -4,4 +4,4 @@ pdf2image
 google-genai
 python-dotenv
 Pyside6
-python-magic-bin
+filetype

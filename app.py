@@ -1,5 +1,5 @@
 import sys
-import magic
+from pathlib import Path
 
 from PySide6.QtWidgets import (
     QApplication,
@@ -13,7 +13,8 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSpinBox,
     QWidget,
-    QGridLayout
+    QGridLayout,
+    QMessageBox
 )
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtCore import QTimer, Slot, Qt
@@ -108,7 +109,7 @@ class MainWindow(QMainWindow):
 
 
     @Slot(int)
-    def wpm_changed(self, value: int) -> int:
+    def wpm_changed(self, value: int) -> None:
         # go from wpm to milisecond
         new_interval = wpm_to_ms(value)
         print(new_interval)
@@ -125,10 +126,12 @@ class MainWindow(QMainWindow):
 
         if f_name:
             # determine the type of the file to determine additional processing
-            file_type = magic.from_file(f_name, mime=True)
+            file_type = Path(f_name).suffix.lower()
+
+            print(file_type)
 
             # case .txt
-            if "text/plain" in file_type:
+            if file_type == ".txt":
                 self.word_list = WordList()
                 self.word_list.init_from_txt_file(f_name)
                 self.word_display.setText(self.word_list.get_current_word())
@@ -138,23 +141,12 @@ class MainWindow(QMainWindow):
                 return
             
             # case .pdf
-            elif "application/pdf" in file_type:
-                import_d = ImportDialog()
+            elif file_type == ".pdf":
+                print("pdf detected")
+                import_d = ImportDialog(f_name, self)
                 import_d.exec()
-
-
-            # after a text version has been obtained, proceed as usual
-            """
-            self.word_list = WordList()
-            self.word_list.init_from_txt_file(f_name)
-            self.word_display.setText(self.word_list.get_current_word())
-            self.play_button.setEnabled(True)
-            self.pause_button.setEnabled(True)
-            self.prog_bar.setMaximum(self.word_list.remaining)
-            """
-
-
     
+
     def __init_menu_bar(self) -> QMenuBar:
         mb = QMenuBar()
         
