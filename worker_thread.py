@@ -2,20 +2,22 @@ from PySide6.QtCore import QRunnable, Slot, Signal, QObject
 from file_processing import extract
 
 class WorkerThread(QRunnable):
-    def __init__(self, file_path: str) -> None:
+    def __init__(self, func, *args, **kwargs) -> None:
         super().__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
         self.signals = WorkerSignals()
-        self.file_path = file_path
 
     @Slot()
     def run(self):
         try:
-            print("Starting!")
-            text = extract(self.file_path)
-            self.signals.result.emit(text)
-            self.signals.finished.emit()
+            out = self.func(*self.args, **self.kwargs)
+            self.signals.result.emit(out)
         except Exception as e:
             self.signals.error.emit(str(e))
+        finally:
+            self.signals.finished.emit()
 
 class WorkerSignals(QObject):
     finished = Signal()
