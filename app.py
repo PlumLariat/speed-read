@@ -1,4 +1,5 @@
 import sys
+import logging
 from pathlib import Path
 
 from PySide6.QtWidgets import (
@@ -27,6 +28,19 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Speed Reader")
         self.setWindowIcon(QIcon('./assets/lightning.png'))
         self.resize(800, 600)
+
+        # configure logging
+        self.logger = logging.getLogger(__name__)
+        
+        # create a new log file on each run
+        logging.basicConfig(
+            filename='app.log',
+            encoding='utf-8',
+            level=logging.DEBUG,
+            filemode='w',
+            format='%(asctime)s [%(levelname)s]: %(message)s',
+            datefmt='%m/%d/%Y %I:%M:%S %p'
+        )
 
         # Non-GUI application variables
         self.word_list = WordList()
@@ -94,7 +108,7 @@ class MainWindow(QMainWindow):
             return
         
         if event.key() == Qt.Key.Key_Space:
-            print("You pressed space")
+            self.logger.debug("User pressed space")
             if self.is_playing:
                 self.pause()
             else:
@@ -133,7 +147,7 @@ class MainWindow(QMainWindow):
     def wpm_changed(self, value: int) -> None:
         # go from wpm to milisecond
         new_interval = wpm_to_ms(value)
-        print(new_interval)
+        self.logger.debug(f"User changed wpm to: {value}, timer now set to trigger every: {new_interval}ms.")
         self.timer_interval = new_interval
         self.timer.setInterval(self.timer_interval)
 
@@ -149,7 +163,7 @@ class MainWindow(QMainWindow):
             # determine the type of the file to determine additional processing
             file_type = Path(f_name).suffix.lower()
 
-            print(file_type)
+            self.logger.info(f"User uploaded a file type: {file_type}")
 
             # case .txt
             if file_type == ".txt":
@@ -164,7 +178,6 @@ class MainWindow(QMainWindow):
             
             # case .pdf
             elif file_type == ".pdf":
-                print("pdf detected")
                 import_d = ImportDialog(f_name, self)
                 import_d.exec()
     
