@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QWidget,
     QGridLayout
 )
-from PySide6.QtGui import QIcon, QAction
+from PySide6.QtGui import QIcon, QAction, QKeyEvent
 from PySide6.QtCore import QTimer, Slot, Qt
 from word_list import WordList
 from import_dialog import ImportDialog
@@ -33,6 +33,10 @@ class MainWindow(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.timer_tick)
         self.timer_interval = 200
+
+        # toggle play/pause
+        self.is_playing = False
+        self.file_loaded = False
 
         # define and setup all necessary components 
         self.word_display = QLabel("Upload a file to get started.")
@@ -80,6 +84,23 @@ class MainWindow(QMainWindow):
         widget.setLayout(layout)
         self.setCentralWidget(widget)
         self.setMenuBar(self.__init_menu_bar())
+
+    def keyPressEvent(self, event: QKeyEvent) -> None:
+        """Controls playing and pausing when the user presses the space key."""
+
+        # nothing to play or pause if no file is loaded
+        if not self.file_loaded:
+            return
+        
+        if event.key() == Qt.Key.Key_Space:
+            print("You pressed space")
+            if self.is_playing:
+                self.pause()
+            else:
+                self.play()
+
+            # toggle play/pause
+            self.is_playing = not self.is_playing
 
     @Slot()
     def play(self):
@@ -135,6 +156,7 @@ class MainWindow(QMainWindow):
                 self.play_button.setEnabled(True)
                 self.pause_button.setEnabled(True)
                 self.prog_bar.setMaximum(self.word_list.remaining)
+                self.file_loaded = True
                 return
             
             # case .pdf
