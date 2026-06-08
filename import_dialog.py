@@ -12,8 +12,13 @@ from PySide6.QtGui import QMovie
 
 from worker_thread import WorkerThread
 
+
 class ImportDialog(QDialog):
-    def __init__(self, file_path: str, parent=None,) -> None:
+    def __init__(
+        self,
+        file_path: str,
+        parent=None,
+    ) -> None:
         super().__init__(parent)
         self.file_path = file_path
         self.tesseractFinished = False
@@ -34,8 +39,7 @@ class ImportDialog(QDialog):
         self.loading_label.hide()
 
         self.btn_box = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok | 
-            QDialogButtonBox.StandardButton.Cancel
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
         self.btn_box.accepted.connect(self.on_ok_clicked)
         self.btn_box.rejected.connect(self.reject)
@@ -60,8 +64,8 @@ class ImportDialog(QDialog):
         if not self.tesseractFinished:
             self.status_label.setText("Starting Tesseract extraction...")
 
-            # In-Progress UI 
-            self.pb.setRange(0,0)
+            # In-Progress UI
+            self.pb.setRange(0, 0)
             self.pb.show()
             self.loading_label.show()
             self.spinner_animation.start()
@@ -78,7 +82,7 @@ class ImportDialog(QDialog):
 
             self.thread_pool.start(self.wt)
             return
-        
+
         # close dialog, send the accept signal
         self.accept()
 
@@ -91,7 +95,7 @@ class ImportDialog(QDialog):
 
         ok_btn = self.btn_box.button(QDialogButtonBox.StandardButton.Ok)
         ok_btn.setEnabled(True)
-        
+
         self.status_label.setText("Extraction complete. Press Ok to Continue.")
 
     @Slot(str)
@@ -108,5 +112,3 @@ class ImportDialog(QDialog):
         ok_btn.setEnabled(True)
 
         self.status_label.setText(f"Extraction Failed: {msg}")
-
-

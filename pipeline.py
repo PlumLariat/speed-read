@@ -1,4 +1,5 @@
-from PySide6.QtCore import QObject, Signal, QThreadPool, Slot
+from PySide6.QtCore import QObject, Signal, QThreadPool
+
 
 class Pipeline(QObject):
     done = Signal(object)
@@ -11,6 +12,6 @@ class Pipeline(QObject):
         self.serial_pool.setMaxThreadCount(1)
 
         self.parallel_pool = QThreadPool()
-        self.parallel_pool.setMaxThreadCount(max(2, QThreadPool.globalInstance().maxThreadCount()))
-
-    
+        self.parallel_pool.setMaxThreadCount(
+            max(2, QThreadPool.globalInstance().maxThreadCount())
+        )

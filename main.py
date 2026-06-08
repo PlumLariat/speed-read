@@ -4,7 +4,6 @@ from pathlib import Path
 
 from PySide6.QtWidgets import (
     QApplication,
-    QErrorMessage,
     QFileDialog,
     QMainWindow,
     QMenu,
@@ -15,31 +14,31 @@ from PySide6.QtWidgets import (
     QSpinBox,
     QWidget,
     QGridLayout,
-    QMessageBox
 )
 from PySide6.QtGui import QIcon, QAction, QKeyEvent
 from PySide6.QtCore import QTimer, Slot, Qt
 from word_list import WordList
 from import_dialog import ImportDialog
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Speed Reader")
-        self.setWindowIcon(QIcon('./assets/lightning.png'))
+        self.setWindowIcon(QIcon("./assets/lightning.png"))
         self.resize(800, 600)
 
         # configure logging
         self.logger = logging.getLogger(__name__)
-        
+
         # create a new log file on each run
         logging.basicConfig(
-            filename='app.log',
-            encoding='utf-8',
+            filename="app.log",
+            encoding="utf-8",
             level=logging.DEBUG,
-            filemode='w',
-            format='%(asctime)s [%(levelname)s]: %(message)s',
-            datefmt='%m/%d/%Y %I:%M:%S %p'
+            filemode="w",
+            format="%(asctime)s [%(levelname)s]: %(message)s",
+            datefmt="%m/%d/%Y %I:%M:%S %p",
         )
 
         # Non-GUI application variables
@@ -53,7 +52,7 @@ class MainWindow(QMainWindow):
         self.is_playing = False
         self.file_loaded = False
 
-        # define and setup all necessary components 
+        # define and setup all necessary components
         self.word_display = QLabel("Upload a file to get started.")
         self.word_display_font = self.word_display.font()
         self.word_display_font.setPointSize(32)
@@ -74,7 +73,6 @@ class MainWindow(QMainWindow):
         self.wpm_control.setSingleStep(10)
         self.wpm_control.valueChanged.connect(self.wpm_changed)
 
-
         self.play_button = QPushButton("Play")
         self.pause_button = QPushButton("Pause")
 
@@ -88,7 +86,9 @@ class MainWindow(QMainWindow):
 
         # Define the layout, place components
         layout = QGridLayout()
-        layout.addWidget(self.word_display, 0, 0, 4, 7, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(
+            self.word_display, 0, 0, 4, 7, alignment=Qt.AlignmentFlag.AlignCenter
+        )
         layout.addWidget(wpm_label, 4, 5, 1, 2, alignment=Qt.AlignmentFlag.AlignBottom)
         layout.addWidget(self.play_button, 5, 0)
         layout.addWidget(self.pause_button, 5, 1)
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
         # nothing to play or pause if no file is loaded
         if not self.file_loaded:
             return
-        
+
         if event.key() == Qt.Key.Key_Space:
             self.logger.debug("User pressed space")
             if self.is_playing:
@@ -142,21 +142,19 @@ class MainWindow(QMainWindow):
         else:
             self.pause()
 
-
     @Slot(int)
     def wpm_changed(self, value: int) -> None:
         # go from wpm to milisecond
         new_interval = wpm_to_ms(value)
-        self.logger.debug(f"User changed wpm to: {value}, timer now set to trigger every: {new_interval}ms.")
+        self.logger.debug(
+            f"User changed wpm to: {value}, timer now set to trigger every: {new_interval}ms."
+        )
         self.timer_interval = new_interval
         self.timer.setInterval(self.timer_interval)
 
     def upload_file_action(self):
         f_name, _ = QFileDialog.getOpenFileName(
-            self,
-            "Open PDF or Text File",
-            ".",
-            "PDF & Text files (*.pdf *.txt)"
+            self, "Open PDF or Text File", ".", "PDF & Text files (*.pdf *.txt)"
         )
 
         if f_name:
@@ -175,26 +173,23 @@ class MainWindow(QMainWindow):
                 self.prog_bar.setMaximum(self.word_list.remaining)
                 self.file_loaded = True
                 return
-            
+
             # case .pdf
             elif file_type == ".pdf":
                 import_d = ImportDialog(f_name, self)
                 import_d.exec()
-    
 
     def __init_menu_bar(self) -> QMenuBar:
         mb = QMenuBar()
-        
+
         fm = QMenu("File", self)
         open_action: QAction = QAction("Open", self)
         open_action.setShortcut("Ctrl+O")
         open_action.triggered.connect(self.upload_file_action)
-        fm.addAction(open_action) # type: ignore
-
-        
+        fm.addAction(open_action)
 
         em = QMenu(title="Edit")
-        
+
         hm = QMenu(title="Help")
 
         mb.addMenu(fm)
@@ -202,12 +197,11 @@ class MainWindow(QMainWindow):
         mb.addMenu(hm)
 
         return mb
-    
+
+
 def wpm_to_ms(words: int) -> int:
-    '''Get the time in microseconds required to display one word at requested words per minute'''
+    """Get the time in microseconds required to display one word at requested words per minute"""
     return int(60_000.0 / words)
-
-
 
 
 if __name__ == "__main__":

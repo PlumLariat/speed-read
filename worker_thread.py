@@ -1,5 +1,5 @@
 from PySide6.QtCore import QRunnable, Slot, Signal, QObject
-from file_processing import extract
+
 
 class WorkerThread(QRunnable):
     def __init__(self, func, *args, **kwargs) -> None:
@@ -19,8 +19,8 @@ class WorkerThread(QRunnable):
         finally:
             self.signals.finished.emit()
 
+
 class WorkerSignals(QObject):
     finished = Signal()
-    error = Signal(str) 
+    error = Signal(str)
     result = Signal(str)
-        

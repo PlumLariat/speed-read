@@ -1,6 +1,7 @@
 from PySide6.QtGui import QColor, QPalette
 from PySide6.QtWidgets import QWidget
 
+
 class Color(QWidget):
     def __init__(self, color):
         super().__init__()
