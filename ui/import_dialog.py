@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import QThreadPool, Slot
 from PySide6.QtGui import QMovie
 
-from worker_thread import WorkerThread
+from workers.worker_thread import WorkerThread
 
 
 class ImportDialog(QDialog):
