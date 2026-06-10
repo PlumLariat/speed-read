@@ -14,17 +14,13 @@ dependencies = [
     "python-dotenv>=1.2.2",
 ]
 
-[project.scripts]
-speed-read = "speed_read.__main__:main"
-
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.0",
     "ruff>=0.15.16",
-    "ty>=0.0.46",
+    "ty>=0.0.47",
 ]
 docs = [
-    "mkdocs>=1.6.1",
-    "mkdocs-material>=9.7.6",
-    "mkdocstrings[python]>=1.0.4",
+    "mkdocstrings-python>=2.0.4",
+    "zensical>=0.0.45",
 ]
