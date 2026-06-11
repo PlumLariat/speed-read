@@ -2,172 +2,52 @@
 icon: lucide/rocket
 ---
 
-# Get started
+# Speed Read
 
-For full documentation visit [zensical.org](https://zensical.org/docs/).
+A desktop speed-reading app that displays text one word at a time at a configurable pace. Accepts plain-text files directly, or PDF files — which are processed through OCR and cleaned up with Gemini AI before reading.
 
-## Commands
+## Requirements
 
-* [`zensical new`][new] - Create a new project
-* [`zensical serve`][serve] - Start local web server
-* [`zensical build`][build] - Build your site
+- Python 3.13+
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) installed on your system
+- [Poppler](https://poppler.freedesktop.org/) installed on your system (required for PDF conversion)
+- A Gemini API key (only needed for PDF imports)
 
-  [new]: https://zensical.org/docs/usage/new/
-  [serve]: https://zensical.org/docs/usage/preview/
-  [build]: https://zensical.org/docs/usage/build/
+## Installation
 
-## Examples
-
-### Admonitions
-
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/)
-
-!!! note
-
-    This is a **note** admonition. Use it to provide helpful information.
-
-!!! warning
-
-    This is a **warning** admonition. Be careful!
-
-### Details
-
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/#collapsible-blocks)
-
-??? info "Click to expand for more info"
-
-    This content is hidden until you click to expand it.
-    Great for FAQs or long explanations.
-
-## Code Blocks
-
-> Go to [documentation](https://zensical.org/docs/authoring/code-blocks/)
-
-``` python hl_lines="2" title="Code blocks"
-def greet(name):
-    print(f"Hello, {name}!") # (1)!
-
-greet("Python")
+```bash
+git clone https://github.com/plumlariat/speed-read
+cd speed-read
+uv sync
 ```
 
-1.  > Go to [documentation](https://zensical.org/docs/authoring/code-blocks/#code-annotations)
+Create a `.env` file in the project root with your Gemini API key:
 
-    Code annotations allow to attach notes to lines of code.
-
-Code can also be highlighted inline: `#!python print("Hello, Python!")`.
-
-## Content tabs
-
-> Go to [documentation](https://zensical.org/docs/authoring/content-tabs/)
-
-=== "Python"
-
-    ``` python
-    print("Hello from Python!")
-    ```
-
-=== "Rust"
-
-    ``` rs
-    println!("Hello from Rust!");
-    ```
-
-## Diagrams
-
-> Go to [documentation](https://zensical.org/docs/authoring/diagrams/)
-
-``` mermaid
-graph LR
-  A[Start] --> B{Error?};
-  B -->|Yes| C[Hmm...];
-  C --> D[Debug];
-  D --> B;
-  B ---->|No| E[Yay!];
+```
+GEMINI_API_KEY=your_key_here
 ```
 
-## Footnotes
+## Running the app
 
-> Go to [documentation](https://zensical.org/docs/authoring/footnotes/)
+```bash
+uv run main.py
+```
 
-Here's a sentence with a footnote.[^1]
+## Usage
 
-Hover it, to see a tooltip.
+**Opening a file**
 
-[^1]: This is the footnote.
+Use **File → Open** or press ++ctrl+o++ to open a `.txt` or `.pdf` file.
 
+- `.txt` files are loaded directly.
+- `.pdf` files are run through Tesseract OCR and then cleaned up by Gemini AI. The cleaned text is saved as a timestamped `.txt` file in the project root, then loaded for reading.
 
-## Formatting
+**Playback controls**
 
-> Go to [documentation](https://zensical.org/docs/authoring/formatting/)
+| Action | How |
+|---|---|
+| Play | Click **Play** or press ++space++ |
+| Pause | Click **Pause** or press ++space++ |
+| Adjust speed | Use the **Words/Minute** spinner |
 
-- ==This was marked (highlight)==
-- ^^This was inserted (underline)^^
-- ~~This was deleted (strikethrough)~~
-- H~2~O
-- A^T^A
-- ++ctrl+alt+del++
-
-## Icons, Emojis
-
-> Go to [documentation](https://zensical.org/docs/authoring/icons-emojis/)
-
-* :sparkles: `:sparkles:`
-* :rocket: `:rocket:`
-* :tada: `:tada:`
-* :memo: `:memo:`
-* :eyes: `:eyes:`
-
-## Maths
-
-> Go to [documentation](https://zensical.org/docs/authoring/math/)
-
-$$
-\cos x=\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k)!}x^{2k}
-$$
-
-!!! warning "Needs configuration"
-    Note that MathJax is included via a `script` tag on this page and is not
-    configured in the generated default configuration to avoid including it
-    in a pages that do not need it. See the documentation for details on how
-    to configure it on all your pages if they are more Maths-heavy than these
-    simple starter pages.
-
-<script id="MathJax-script" src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [["\\(", "\\)"]],
-      displayMath: [["\\[", "\\]"]],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      ignoreHtmlClass: ".*|",
-      processHtmlClass: "arithmatex"
-    }
-  };
-
-  document$.subscribe(() => {
-    MathJax.startup.output.clearCache()
-    MathJax.typesetClear()
-    MathJax.texReset()
-    MathJax.typesetPromise()
-  })
-</script>
-
-## Task Lists
-
-> Go to [documentation](https://zensical.org/docs/authoring/lists/#using-task-lists)
-
-* [x] Install Zensical
-* [x] Configure `zensical.toml`
-* [x] Write amazing documentation
-* [ ] Deploy anywhere
-
-## Tooltips
-
-> Go to [documentation](https://zensical.org/docs/authoring/tooltips/)
-
-[Hover me][example]
-
-  [example]: https://example.com "I'm a tooltip!"
+The progress bar at the bottom tracks position through the document. When the end is reached, pressing Play again restarts from the beginning.
