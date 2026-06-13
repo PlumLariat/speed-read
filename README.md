@@ -1,6 +1,6 @@
 # Speed Read
 
-A desktop speed-reading app that displays text one word at a time at a configurable pace. Accepts plain-text files directly, or PDFs — which are processed through OCR and cleaned up with Gemini AI before reading.
+A desktop speed-reading app that displays text one word at a time at a configurable pace. Accepts .txt or .pdf, which are processed through OCR and cleaned up with Gemini AI before reading.
 
 ## Requirements
 

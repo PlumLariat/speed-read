@@ -26,9 +26,9 @@ def gemini_reconstruction(tesseract_str: str) -> None:
     """
     This function is the second step in extracting text data from a pdf of a textbook. This step hopes to
     scrub away some of the OCR artifacts that are left behind when tessaract does its first pass.
-    Function sends that data with a prompt that trys to reconstruct and clean up output.
+    Function sends that data with a prompt that tries to reconstruct and clean up output.
 
-    Output is in the form of an text file that is created in the root dir distinguised by its timestamp.
+    Output is in the form of an text file that is created in the root dir distinguished by its timestamp.
 
     :param tesseract_str: String generated via tesseract in the previous step.
     :type tesseract_str: str
