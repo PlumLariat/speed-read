@@ -32,3 +32,4 @@ uv run main.py
 ## Docs
 
 Full documentation at [plumlariat.github.io/speed-read](https://plumlariat.github.io/speed-read)
+[developers website](https://ejeffcoat.dev)
