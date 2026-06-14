@@ -5,6 +5,11 @@ logger = logging.getLogger(__name__)
 
 
 def is_ollama_installed() -> bool:
+    """Checks if [ollama](https://ollama.com/) is installed on the system where function is run.
+
+    Returns:
+        Boolean value which represents installation status of ollama.
+    """
     try:
         sp = subprocess.run(["ollama", "--version"], capture_output=True)
         logger.info(f"ollama {sp.stdout.decode().strip()} installed.")
@@ -18,6 +23,11 @@ def is_ollama_installed() -> bool:
 
 
 def is_tesseract_installed() -> bool:
+    """Checks if [tesseract](https://github.com/tesseract-ocr/tesseract) is installed on the system where function is run.
+
+    Returns:
+        Boolean value which represents installation status of tesseract.
+    """
     try:
         sp = subprocess.run(["tesseract", "--version"], capture_output=True)
         if sp.returncode != 0:
